@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: pdf-nexus-backend
+    env: python
+    region: oregon
+    plan: starter
+    rootDir: backend
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: PORT
+        value: 8000
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+    disk:
+      name: pdf-nexus-data
+      mountPath: /app/uploads
+      sizeGB: 5
