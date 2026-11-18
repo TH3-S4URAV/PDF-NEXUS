@@ -1,9 +1,10 @@
 services:
+  # Backend API Service (FastAPI + PyMuPDF + Tesseract)
   - type: web
     name: pdf-nexus-backend
     env: python
     region: oregon
-    plan: starter
+    plan: free
     rootDir: backend
     buildCommand: pip install --upgrade pip && pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
@@ -16,7 +17,17 @@ services:
         generateValue: true
       - key: CORS_ORIGINS
         value: "*"
-    disk:
-      name: pdf-nexus-data
-      mountPath: /app/uploads
-      sizeGB: 5
+
+  # Frontend Web Application (React + Vite + Tailwind)
+  - type: web
+    name: pdf-nexus-frontend
+    env: static
+    region: oregon
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
