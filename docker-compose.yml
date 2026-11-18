@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pdf_nexus_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - SECRET_KEY=pdf-nexus-production-docker-secret-key-2026
+      - DATABASE_URL=sqlite:///./pdf_nexus.db
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    volumes:
+      - pdf_nexus_data:/app/uploads
+      - pdf_nexus_exports:/app/exports
+      - ./backend/pdf_nexus.db:/app/pdf_nexus.db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pdf_nexus_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pdf_nexus_data:
+  pdf_nexus_exports:
